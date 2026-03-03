@@ -55,10 +55,9 @@ export default function NewSpotPage() {
   const [bestSeason, setBestSeason] = useState<string[]>([])
   const [accessNotes, setAccessNotes] = useState('')
 
-  const supabase = createClient()
-
   useEffect(() => {
     async function loadCategories() {
+      const supabase = createClient()
       const { data } = await supabase
         .from('categories')
         .select('*')
@@ -66,7 +65,7 @@ export default function NewSpotPage() {
       if (data) setCategories(data)
     }
     loadCategories()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleMapClick = (e: MapMouseEvent) => {
     const latLng = e.detail?.latLng

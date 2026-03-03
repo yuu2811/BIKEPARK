@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { createReview } from '@/actions/reviews'
+import Image from 'next/image'
 import { Star, ThumbsUp, ThumbsDown } from 'lucide-react'
 import type { Database } from '@/types/database'
 
@@ -139,9 +140,11 @@ export function ReviewSection({ spotId, reviews }: ReviewSectionProps) {
               <div className="mb-2 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {review.profiles?.avatar_url && (
-                    <img
+                    <Image
                       src={review.profiles.avatar_url}
-                      alt=""
+                      alt={`${review.profiles.display_name || 'ライダー'}のアバター`}
+                      width={24}
+                      height={24}
                       className="h-6 w-6 rounded-full"
                     />
                   )}
