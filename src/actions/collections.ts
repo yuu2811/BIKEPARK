@@ -169,7 +169,9 @@ export async function reorderCollectionItems(
       .eq('id', id)
   )
 
-  await Promise.all(updates)
+  const results = await Promise.all(updates)
+  const failed = results.find((r) => r.error)
+  if (failed?.error) return { success: false, error: failed.error.message }
 
   revalidatePath(`/collections/${collectionId}`)
   return { success: true, data: undefined }
@@ -209,7 +211,7 @@ export async function forkCollection(
 
   // Copy items
   if (source.collection_items && source.collection_items.length > 0) {
-    await supabase.from('collection_items').insert(
+    const { error: itemsError } = await supabase.from('collection_items').insert(
       source.collection_items.map((item: { spot_id: string; sort_order: number; note: string | null }) => ({
         collection_id: forked.id,
         spot_id: item.spot_id,
@@ -217,13 +219,15 @@ export async function forkCollection(
         note: item.note,
       }))
     )
+    if (itemsError) return { success: false, error: itemsError.message }
   }
 
   // Increment fork count
-  await supabase
+  const { error: countError } = await supabase
     .from('collections')
     .update({ fork_count: (source.fork_count || 0) + 1 })
     .eq('id', collectionId)
+  if (countError) return { success: false, error: countError.message }
 
   revalidatePath('/my-collections')
   return { success: true, data: { id: forked.id } }

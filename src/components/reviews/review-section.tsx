@@ -74,6 +74,7 @@ export function ReviewSection({ spotId, reviews }: ReviewSectionProps) {
                   onMouseEnter={() => setHoverRating(star)}
                   onMouseLeave={() => setHoverRating(0)}
                   onClick={() => setRating(star)}
+                  aria-label={`${star}つ星`}
                   className="p-0.5"
                 >
                   <Star
