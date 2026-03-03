@@ -79,7 +79,7 @@ export default async function RiderProfilePage({ params }: Props) {
         {/* Profile header */}
         <div className="mb-8 flex items-start gap-4">
           {profile.avatar_url ? (
-            <img src={profile.avatar_url} alt="" className="h-16 w-16 rounded-full" />
+            <img src={profile.avatar_url} alt={`${profile.display_name}のアバター`} className="h-16 w-16 rounded-full" />
           ) : (
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted text-2xl font-bold">
               {profile.display_name.charAt(0)}

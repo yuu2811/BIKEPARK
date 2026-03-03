@@ -20,7 +20,7 @@ import {
   HelpCircle,
   MapPin,
 } from 'lucide-react'
-import { Map, AdvancedMarker } from '@vis.gl/react-google-maps'
+import { Map, AdvancedMarker, type MapMouseEvent } from '@vis.gl/react-google-maps'
 import { MAP_DEFAULT_CENTER } from '@/lib/google-maps/config'
 import type { Database } from '@/types/database'
 
@@ -68,14 +68,11 @@ export default function NewSpotPage() {
     loadCategories()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleMapClick = (e: any) => {
-    const detail = e?.detail?.latLng || e?.latLng
-    if (detail) {
-      const lat = typeof detail.lat === 'function' ? detail.lat() : detail.lat
-      const lng = typeof detail.lng === 'function' ? detail.lng() : detail.lng
-      setLatitude(lat)
-      setLongitude(lng)
+  const handleMapClick = (e: MapMouseEvent) => {
+    const latLng = e.detail?.latLng
+    if (latLng) {
+      setLatitude(latLng.lat)
+      setLongitude(latLng.lng)
     }
   }
 

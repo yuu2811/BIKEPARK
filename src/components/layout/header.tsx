@@ -86,7 +86,7 @@ export function Header({ user }: HeaderProps) {
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-muted"
                 >
                   {user.avatar_url ? (
-                    <img src={user.avatar_url} alt="" className="h-8 w-8 rounded-full" />
+                    <img src={user.avatar_url} alt={`${user.display_name || 'ユーザー'}のアバター`} className="h-8 w-8 rounded-full" />
                   ) : (
                     <User className="h-4 w-4" />
                   )}

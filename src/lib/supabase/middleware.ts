@@ -35,18 +35,8 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Protect dashboard routes
-  if (
-    !user &&
-    request.nextUrl.pathname.startsWith('/dashboard') ||
-    !user &&
-    request.nextUrl.pathname.startsWith('/spots/new') ||
-    !user &&
-    request.nextUrl.pathname.startsWith('/my-collections') ||
-    !user &&
-    request.nextUrl.pathname.startsWith('/route-builder') ||
-    !user &&
-    request.nextUrl.pathname.startsWith('/settings')
-  ) {
+  const protectedPaths = ['/dashboard', '/spots/new', '/my-collections', '/route-builder', '/settings']
+  if (!user && protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     url.searchParams.set('redirect', request.nextUrl.pathname)

@@ -8,6 +8,7 @@ import { ParkingBadge } from '@/components/spots/parking-badge'
 import { ReviewSection } from '@/components/reviews/review-section'
 import { VerificationSection } from '@/components/shared/verification-section'
 import { AdvisoryBanner } from '@/components/shared/advisory-banner'
+import { AddToCollectionButton } from '@/components/collections/add-to-collection-button'
 import {
   MapPin,
   Star,
@@ -16,7 +17,6 @@ import {
   Calendar,
   Shield,
   ExternalLink,
-  FolderPlus,
   Route,
   ParkingSquare,
 } from 'lucide-react'
@@ -85,8 +85,11 @@ export default async function SpotDetailPage({ params }: Props) {
     spring: '春', summer: '夏', autumn: '秋', winter: '冬',
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const spotCategories = categories?.map((sc: any) => sc.categories).filter(Boolean).flat() || []
+  const spotCategories = categories?.flatMap((sc) => {
+    const cat = sc.categories as unknown as { id: number; name_ja: string; slug: string; color: string } | { id: number; name_ja: string; slug: string; color: string }[] | null
+    if (!cat) return []
+    return Array.isArray(cat) ? cat : [cat]
+  }) || []
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -235,10 +238,7 @@ export default async function SpotDetailPage({ params }: Props) {
                   Googleマップで開く
                 </Button>
               </Link>
-              <Button className="w-full gap-2" variant="outline">
-                <FolderPlus className="h-4 w-4" />
-                コレクションに追加
-              </Button>
+              <AddToCollectionButton spotId={id} />
               <Link href={`/route-builder?spot=${spot.id}`} className="block">
                 <Button className="w-full gap-2" variant="outline">
                   <Route className="h-4 w-4" />
@@ -300,7 +300,7 @@ export default async function SpotDetailPage({ params }: Props) {
                 {(spot.profiles as { display_name: string; avatar_url: string | null })?.avatar_url && (
                   <img
                     src={(spot.profiles as { avatar_url: string }).avatar_url}
-                    alt=""
+                    alt={`${(spot.profiles as { display_name: string })?.display_name || 'ライダー'}のアバター`}
                     className="h-6 w-6 rounded-full"
                   />
                 )}

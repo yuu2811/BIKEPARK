@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useCallback, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -11,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { MapProvider } from '@/components/map/map-provider'
 import { createRoute } from '@/actions/routes'
 import { buildGoogleMapsDirectionsUrl, buildSegmentedGoogleMapsUrls } from '@/lib/google-maps/url-builder'
-import { Map, AdvancedMarker } from '@vis.gl/react-google-maps'
+import { Map, AdvancedMarker, type MapMouseEvent } from '@vis.gl/react-google-maps'
 import { MAP_DEFAULT_CENTER } from '@/lib/google-maps/config'
 import {
   Plus,
@@ -38,6 +39,7 @@ interface RouteStop {
 
 export default function RouteBuilderPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [stops, setStops] = useState<RouteStop[]>([])
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -45,6 +47,39 @@ export default function RouteBuilderPage() {
   const [showSaveDialog, setShowSaveDialog] = useState(false)
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+
+  // Load spot from query parameter (?spot=<id>)
+  useEffect(() => {
+    const spotId = searchParams.get('spot')
+    if (!spotId) return
+
+    const loadSpot = async () => {
+      const supabase = createClient()
+      const { data: spot } = await supabase
+        .from('spots')
+        .select('id, name, latitude, longitude')
+        .eq('id', spotId)
+        .single()
+
+      if (spot) {
+        setStops((prev) => {
+          if (prev.some((s) => s.custom_name === spot.name)) return prev
+          return [
+            ...prev,
+            {
+              id: crypto.randomUUID(),
+              custom_name: spot.name,
+              latitude: spot.latitude,
+              longitude: spot.longitude,
+              stop_type: prev.length === 0 ? 'origin' : 'stop',
+            },
+          ]
+        })
+      }
+    }
+
+    loadSpot()
+  }, [searchParams])
 
   const addStop = useCallback((lat: number, lng: number) => {
     const newStop: RouteStop = {
@@ -75,13 +110,10 @@ export default function RouteBuilderPage() {
     setStops(newStops)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleMapClick = (e: any) => {
-    const detail = e?.detail?.latLng || e?.latLng
-    if (detail) {
-      const lat = typeof detail.lat === 'function' ? detail.lat() : detail.lat
-      const lng = typeof detail.lng === 'function' ? detail.lng() : detail.lng
-      addStop(lat, lng)
+  const handleMapClick = (e: MapMouseEvent) => {
+    const latLng = e.detail?.latLng
+    if (latLng) {
+      addStop(latLng.lat, latLng.lng)
     }
   }
 
