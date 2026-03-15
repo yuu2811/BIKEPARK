@@ -38,10 +38,9 @@ export default function SettingsPage() {
   const [newCc, setNewCc] = useState('')
   const [newBikeType, setNewBikeType] = useState<BikeType>('touring')
 
-  const supabase = createClient()
-
   useEffect(() => {
     async function load() {
+      const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
@@ -65,7 +64,7 @@ export default function SettingsPage() {
       if (bikesData) setBikes(bikesData)
     }
     load()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleSaveProfile = async () => {
     setLoading(true)
@@ -92,6 +91,7 @@ export default function SettingsPage() {
       setNewModel('')
       setNewCc('')
       // Reload bikes
+      const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         const { data } = await supabase.from('user_bikes').select('*').eq('user_id', user.id)

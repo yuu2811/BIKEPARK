@@ -103,10 +103,13 @@ export async function updateRoute(
   if (routeError) return { success: false, error: routeError.message }
 
   // Replace stops
-  await supabase.from('route_stops').delete().eq('route_id', id)
-  await supabase.from('route_stops').insert(
+  const { error: deleteError } = await supabase.from('route_stops').delete().eq('route_id', id)
+  if (deleteError) return { success: false, error: deleteError.message }
+
+  const { error: insertError } = await supabase.from('route_stops').insert(
     stops.map((stop) => ({ ...stop, route_id: id }))
   )
+  if (insertError) return { success: false, error: insertError.message }
 
   revalidatePath(`/routes/${id}`)
   return { success: true, data: undefined }

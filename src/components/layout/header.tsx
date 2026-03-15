@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
@@ -86,7 +87,7 @@ export function Header({ user }: HeaderProps) {
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-muted"
                 >
                   {user.avatar_url ? (
-                    <img src={user.avatar_url} alt="" className="h-8 w-8 rounded-full" />
+                    <Image src={user.avatar_url} alt={`${user.display_name || 'ユーザー'}のアバター`} width={32} height={32} className="h-8 w-8 rounded-full" />
                   ) : (
                     <User className="h-4 w-4" />
                   )}

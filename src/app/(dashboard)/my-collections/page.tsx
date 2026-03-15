@@ -30,10 +30,9 @@ export default function MyCollectionsPage() {
   const [visibility, setVisibility] = useState<Visibility>('private')
   const [loading, setLoading] = useState(false)
 
-  const supabase = createClient()
-
   useEffect(() => {
     async function load() {
+      const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       const { data } = await supabase
@@ -44,7 +43,7 @@ export default function MyCollectionsPage() {
       if (data) setCollections(data)
     }
     load()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleCreate = async () => {
     setLoading(true)
@@ -54,6 +53,7 @@ export default function MyCollectionsPage() {
       setTitle('')
       setDescription('')
       // Reload
+      const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         const { data } = await supabase

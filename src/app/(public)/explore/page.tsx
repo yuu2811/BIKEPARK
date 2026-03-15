@@ -42,11 +42,10 @@ export default function ExplorePage() {
     prefecture: '',
   })
 
-  const supabase = createClient()
-
   // Load categories once
   useEffect(() => {
     async function loadCategories() {
+      const supabase = createClient()
       const { data } = await supabase
         .from('categories')
         .select('*')
@@ -54,7 +53,7 @@ export default function ExplorePage() {
       if (data) setCategories(data)
     }
     loadCategories()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   // Fetch spots when bounds or filters change
   const fetchSpots = useCallback(async () => {
@@ -62,6 +61,7 @@ export default function ExplorePage() {
     setLoading(true)
 
     try {
+      const supabase = createClient()
       let query = supabase
         .from('spots')
         .select('*, spot_categories(category_id)')
@@ -96,7 +96,7 @@ export default function ExplorePage() {
     } finally {
       setLoading(false)
     }
-  }, [bounds, filters, supabase])
+  }, [bounds, filters])
 
   useEffect(() => {
     const timer = setTimeout(fetchSpots, 300)

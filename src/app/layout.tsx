@@ -5,7 +5,10 @@ import { createClient } from '@/lib/supabase/server'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'BIKEPARK - ツーリングスポット共有プラットフォーム',
+  title: {
+    default: 'BIKEPARK - ツーリングスポット共有プラットフォーム',
+    template: '%s | BIKEPARK',
+  },
   description:
     'ライダーによる、ライダーのためのツーリングスポット共有アプリ。大型バイクの駐車可否、カテゴリ別スポット検索、ルート作成からGoogleマップへの共有まで。',
   keywords: [

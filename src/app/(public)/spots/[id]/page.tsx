@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -8,6 +9,7 @@ import { ParkingBadge } from '@/components/spots/parking-badge'
 import { ReviewSection } from '@/components/reviews/review-section'
 import { VerificationSection } from '@/components/shared/verification-section'
 import { AdvisoryBanner } from '@/components/shared/advisory-banner'
+import { AddToCollectionButton } from '@/components/collections/add-to-collection-button'
 import {
   MapPin,
   Star,
@@ -16,7 +18,6 @@ import {
   Calendar,
   Shield,
   ExternalLink,
-  FolderPlus,
   Route,
   ParkingSquare,
 } from 'lucide-react'
@@ -85,8 +86,11 @@ export default async function SpotDetailPage({ params }: Props) {
     spring: '春', summer: '夏', autumn: '秋', winter: '冬',
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const spotCategories = categories?.map((sc: any) => sc.categories).filter(Boolean).flat() || []
+  const spotCategories = categories?.flatMap((sc) => {
+    const cat = sc.categories as unknown as { id: number; name_ja: string; slug: string; color: string } | { id: number; name_ja: string; slug: string; color: string }[] | null
+    if (!cat) return []
+    return Array.isArray(cat) ? cat : [cat]
+  }) || []
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -141,11 +145,12 @@ export default async function SpotDetailPage({ params }: Props) {
           {photos && photos.length > 0 && (
             <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
               {photos.map((photo) => (
-                <div key={photo.id} className="aspect-video overflow-hidden rounded-lg bg-muted">
-                  <img
+                <div key={photo.id} className="relative aspect-video overflow-hidden rounded-lg bg-muted">
+                  <Image
                     src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/spot-photos/${photo.storage_path}`}
                     alt={photo.caption || spot.name}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
               ))}
@@ -235,10 +240,7 @@ export default async function SpotDetailPage({ params }: Props) {
                   Googleマップで開く
                 </Button>
               </Link>
-              <Button className="w-full gap-2" variant="outline">
-                <FolderPlus className="h-4 w-4" />
-                コレクションに追加
-              </Button>
+              <AddToCollectionButton spotId={id} />
               <Link href={`/route-builder?spot=${spot.id}`} className="block">
                 <Button className="w-full gap-2" variant="outline">
                   <Route className="h-4 w-4" />
@@ -298,9 +300,11 @@ export default async function SpotDetailPage({ params }: Props) {
               <p className="mb-2 text-xs text-muted-foreground">登録者</p>
               <div className="flex items-center gap-2">
                 {(spot.profiles as { display_name: string; avatar_url: string | null })?.avatar_url && (
-                  <img
+                  <Image
                     src={(spot.profiles as { avatar_url: string }).avatar_url}
-                    alt=""
+                    alt={`${(spot.profiles as { display_name: string })?.display_name || 'ライダー'}のアバター`}
+                    width={24}
+                    height={24}
                     className="h-6 w-6 rounded-full"
                   />
                 )}

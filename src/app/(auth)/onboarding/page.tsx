@@ -38,6 +38,7 @@ function OnboardingForm() {
   const supabase = createClient()
 
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [homePrefecture, setHomePrefecture] = useState('')
   const [manufacturer, setManufacturer] = useState('')
@@ -76,7 +77,7 @@ function OnboardingForm() {
 
       router.push(redirect)
     } catch {
-      // ignore
+      setError('プロフィールの保存に失敗しました。もう一度お試しください。')
     } finally {
       setLoading(false)
     }
@@ -93,6 +94,9 @@ function OnboardingForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <p className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</p>
+          )}
           <div className="space-y-2">
             <Label htmlFor="displayName">表示名 *</Label>
             <Input

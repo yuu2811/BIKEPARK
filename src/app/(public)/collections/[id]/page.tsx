@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ParkingBadge } from '@/components/spots/parking-badge'
+import { ForkButton } from '@/components/collections/fork-button'
 import { GitFork, MapPin, Star, ExternalLink } from 'lucide-react'
 import type { Metadata } from 'next'
 
@@ -60,12 +60,7 @@ export default async function CollectionDetailPage({ params }: Props) {
       </div>
 
       <div className="mb-4 flex gap-2">
-        <form action={`/api/fork-collection?id=${id}`} method="POST">
-          <Button variant="outline" size="sm" className="gap-1.5">
-            <GitFork className="h-4 w-4" />
-            フォークする
-          </Button>
-        </form>
+        <ForkButton collectionId={id} />
       </div>
 
       <div className="space-y-3">
