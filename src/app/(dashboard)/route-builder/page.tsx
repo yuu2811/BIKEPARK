@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -11,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { MapProvider } from '@/components/map/map-provider'
 import { createRoute } from '@/actions/routes'
 import { buildGoogleMapsDirectionsUrl, buildSegmentedGoogleMapsUrls } from '@/lib/google-maps/url-builder'
-import { Map, AdvancedMarker } from '@vis.gl/react-google-maps'
+import { Map, AdvancedMarker, type MapMouseEvent } from '@vis.gl/react-google-maps'
 import { MAP_DEFAULT_CENTER } from '@/lib/google-maps/config'
 import {
   Plus,
@@ -75,13 +76,10 @@ export default function RouteBuilderPage() {
     setStops(newStops)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleMapClick = (e: any) => {
-    const detail = e?.detail?.latLng || e?.latLng
-    if (detail) {
-      const lat = typeof detail.lat === 'function' ? detail.lat() : detail.lat
-      const lng = typeof detail.lng === 'function' ? detail.lng() : detail.lng
-      addStop(lat, lng)
+  const handleMapClick = (e: MapMouseEvent) => {
+    const latLng = e?.detail?.latLng
+    if (latLng) {
+      addStop(latLng.lat, latLng.lng)
     }
   }
 
@@ -114,15 +112,18 @@ export default function RouteBuilderPage() {
     })
 
     if (result.success) {
+      toast.success('ルートを保存しました')
       router.push(`/routes/${result.data.id}`)
+    } else {
+      toast.error('ルートの保存に失敗しました')
     }
     setLoading(false)
   }
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem-3rem)] gap-4">
+    <div className="flex h-[calc(100vh-3.5rem-3rem)] flex-col gap-4 md:flex-row">
       {/* Side panel */}
-      <div className="w-96 shrink-0 overflow-y-auto rounded-lg border bg-card p-4">
+      <div className="w-full shrink-0 overflow-y-auto rounded-lg border bg-card p-4 md:w-96">
         <div className="mb-4 flex items-center justify-between">
           <h1 className="flex items-center gap-2 text-lg font-bold">
             <Route className="h-5 w-5" />

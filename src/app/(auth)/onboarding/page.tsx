@@ -2,6 +2,7 @@
 
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -74,9 +75,11 @@ function OnboardingForm() {
         })
       }
 
+      toast.success('プロフィールを設定しました')
       router.push(redirect)
-    } catch {
-      // ignore
+    } catch (err) {
+      toast.error('プロフィールの保存に失敗しました。もう一度お試しください。')
+      console.error('Onboarding error:', err)
     } finally {
       setLoading(false)
     }

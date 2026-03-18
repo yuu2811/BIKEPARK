@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -29,6 +30,7 @@ export default function MyCollectionsPage() {
   const [description, setDescription] = useState('')
   const [visibility, setVisibility] = useState<Visibility>('private')
   const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
 
   const supabase = createClient()
 
@@ -42,6 +44,7 @@ export default function MyCollectionsPage() {
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false })
       if (data) setCollections(data)
+      setInitialLoading(false)
     }
     load()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -50,6 +53,7 @@ export default function MyCollectionsPage() {
     setLoading(true)
     const result = await createCollection({ title, description, visibility })
     if (result.success) {
+      toast.success('コレクションを作成しました')
       setShowCreateDialog(false)
       setTitle('')
       setDescription('')
@@ -63,14 +67,34 @@ export default function MyCollectionsPage() {
           .order('updated_at', { ascending: false })
         if (data) setCollections(data)
       }
+    } else {
+      toast.error('コレクションの作成に失敗しました')
     }
     setLoading(false)
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('このコレクションを削除しますか？')) return
-    await deleteCollection(id)
-    setCollections((prev) => prev.filter((c) => c.id !== id))
+    const result = await deleteCollection(id)
+    if (result.success) {
+      setCollections((prev) => prev.filter((c) => c.id !== id))
+      toast.success('コレクションを削除しました')
+    } else {
+      toast.error('コレクションの削除に失敗しました')
+    }
+  }
+
+  if (initialLoading) {
+    return (
+      <div>
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-2xl font-bold">マイコレクション</h1>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      </div>
+    )
   }
 
   return (

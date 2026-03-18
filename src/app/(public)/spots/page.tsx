@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Map, Plus } from 'lucide-react'
 
 export const metadata = {
-  title: 'スポット一覧 - BIKEPARK',
-  description: 'ツーリングスポットを検索・閲覧',
+  title: 'スポット一覧',
+  description: 'ライダーが登録したツーリングスポットの一覧。大型バイクの駐車可否やカテゴリ別に検索できます。',
 }
 
 export default async function SpotsPage() {

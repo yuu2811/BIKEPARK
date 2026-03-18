@@ -86,7 +86,7 @@ export default async function SpotDetailPage({ params }: Props) {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const spotCategories = categories?.map((sc: any) => sc.categories).filter(Boolean).flat() || []
+  const spotCategories = categories?.map((sc: any) => sc.categories).filter(Boolean).flat() as { id: number; name_ja: string; slug: string; color: string }[] ?? []
 
   return (
     <div className="container mx-auto px-4 py-6">

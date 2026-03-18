@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -39,12 +40,14 @@ export function ReviewSection({ spotId, reviews }: ReviewSectionProps) {
     })
 
     if (result.success) {
+      toast.success('レビューを投稿しました')
       setShowForm(false)
       setRating(0)
       setComment('')
       setParkingAccurate(undefined)
     } else {
       setError(result.error)
+      toast.error(result.error)
     }
     setLoading(false)
   }

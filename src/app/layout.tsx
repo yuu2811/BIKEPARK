@@ -1,11 +1,17 @@
 import type { Metadata } from 'next'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { Toaster } from 'sonner'
 import { createClient } from '@/lib/supabase/server'
 import './globals.css'
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://bikepark.jp'
+
 export const metadata: Metadata = {
-  title: 'BIKEPARK - ツーリングスポット共有プラットフォーム',
+  title: {
+    default: 'BIKEPARK - ツーリングスポット共有プラットフォーム',
+    template: '%s | BIKEPARK',
+  },
   description:
     'ライダーによる、ライダーのためのツーリングスポット共有アプリ。大型バイクの駐車可否、カテゴリ別スポット検索、ルート作成からGoogleマップへの共有まで。',
   keywords: [
@@ -17,6 +23,22 @@ export const metadata: Metadata = {
     'ルート',
     'Googleマップ',
   ],
+  metadataBase: new URL(siteUrl),
+  openGraph: {
+    title: 'BIKEPARK - ツーリングスポット共有プラットフォーム',
+    description:
+      '大型バイクの駐車情報をライダーが共有。スポット探索・コレクション・ルート作成を1つのアプリで。',
+    url: siteUrl,
+    siteName: 'BIKEPARK',
+    locale: 'ja_JP',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BIKEPARK - ツーリングスポット共有プラットフォーム',
+    description:
+      '大型バイクの駐車情報をライダーが共有。スポット探索・コレクション・ルート作成を1つのアプリで。',
+  },
 }
 
 export default async function RootLayout({
@@ -55,6 +77,7 @@ export default async function RootLayout({
           <Header user={headerUser} />
           <main className="flex-1">{children}</main>
           <Footer />
+          <Toaster position="top-right" richColors closeButton />
         </div>
       </body>
     </html>

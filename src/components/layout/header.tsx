@@ -83,6 +83,9 @@ export function Header({ user }: HeaderProps) {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  aria-label="ユーザーメニュー"
+                  aria-expanded={userMenuOpen}
+                  aria-haspopup="true"
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-muted"
                 >
                   {user.avatar_url ? (
@@ -148,6 +151,8 @@ export function Header({ user }: HeaderProps) {
           <button
             className="md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>

@@ -5,8 +5,8 @@ import { Badge } from '@/components/ui/badge'
 import { FolderOpen, MapPin, GitFork } from 'lucide-react'
 
 export const metadata = {
-  title: 'コレクション - BIKEPARK',
-  description: 'ライダーが作成したツーリングスポットコレクションを発見しよう',
+  title: 'コレクション',
+  description: 'ライダーが作成したツーリングスポットコレクションを発見しよう。お気に入りのスポットをまとめて共有。',
 }
 
 export default async function CollectionsPage() {

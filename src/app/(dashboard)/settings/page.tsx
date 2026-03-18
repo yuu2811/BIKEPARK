@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -30,7 +31,7 @@ export default function SettingsPage() {
   const [homePrefecture, setHomePrefecture] = useState('')
   const [bikes, setBikes] = useState<UserBike[]>([])
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState('')
+  const [initialLoading, setInitialLoading] = useState(true)
 
   // New bike form
   const [newManufacturer, setNewManufacturer] = useState('')
@@ -63,6 +64,7 @@ export default function SettingsPage() {
         .eq('user_id', user.id)
 
       if (bikesData) setBikes(bikesData)
+      setInitialLoading(false)
     }
     load()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -74,9 +76,12 @@ export default function SettingsPage() {
       bio: bio || undefined,
       home_prefecture: homePrefecture || undefined,
     })
-    setMessage(result.success ? 'プロフィールを更新しました' : result.error)
+    if (result.success) {
+      toast.success('プロフィールを更新しました')
+    } else {
+      toast.error(result.error)
+    }
     setLoading(false)
-    setTimeout(() => setMessage(''), 3000)
   }
 
   const handleAddBike = async () => {
@@ -88,6 +93,7 @@ export default function SettingsPage() {
       bike_type: newBikeType,
     })
     if (result.success) {
+      toast.success('バイクを追加しました')
       setNewManufacturer('')
       setNewModel('')
       setNewCc('')
@@ -97,23 +103,35 @@ export default function SettingsPage() {
         const { data } = await supabase.from('user_bikes').select('*').eq('user_id', user.id)
         if (data) setBikes(data)
       }
+    } else {
+      toast.error('バイクの追加に失敗しました')
     }
   }
 
   const handleRemoveBike = async (bikeId: string) => {
-    await removeBike(bikeId)
-    setBikes((prev) => prev.filter((b) => b.id !== bikeId))
+    const result = await removeBike(bikeId)
+    if (result.success) {
+      setBikes((prev) => prev.filter((b) => b.id !== bikeId))
+      toast.success('バイクを削除しました')
+    } else {
+      toast.error('バイクの削除に失敗しました')
+    }
+  }
+
+  if (initialLoading) {
+    return (
+      <div className="mx-auto max-w-2xl">
+        <h1 className="mb-6 text-2xl font-bold">設定</h1>
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="mx-auto max-w-2xl">
       <h1 className="mb-6 text-2xl font-bold">設定</h1>
-
-      {message && (
-        <div className="mb-4 rounded-md bg-green-50 p-3 text-sm text-green-700">
-          {message}
-        </div>
-      )}
 
       {/* Profile */}
       <Card className="mb-6">
